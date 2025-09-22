@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>HaoAI Chat - Login/Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light Mode Colors */
+            --bg-primary-light: #FFFFFF;
+            --bg-secondary-light: #F7F7F8;
+            --text-primary-light: #202123;
+            --accent-light: #10A37F;
+            --border-light: #E5E5EA;
+            --link-light: #0B69A3; /* Added for switch link */
+
+            /* Dark Mode Colors */
+            --bg-primary-dark: #343541;
+            --bg-secondary-dark: #202123;
+            --text-primary-dark: #ECECF1;
+            --accent-dark: #10A37F;
+            --border-dark: #565869;
+            --link-dark: #87CEEB; /* Added for switch link */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        html, body {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-primary-light);
+            color: var(--text-primary-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-primary-dark);
+            color: var(--text-primary-dark);
+        }
+
+        .login-container {
+            background-color: var(--bg-secondary-light);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease-in-out; /* Smooth transition for form switch */
+        }
+
+        body.dark-mode .login-container {
+            background-color: var(--bg-secondary-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: var(--text-primary-light);
+        }
+
+        body.dark-mode h2 {
+            color: var(--text-primary-dark);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary-light);
+        }
+
+        body.dark-mode .input-group label {
+            color: var(--text-primary-dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--bg-primary-light);
+            color: var(--text-primary-light);
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        body.dark-mode .input-group input {
+            background-color: var(--bg-primary-dark);
+            border-color: var(--border-dark);
+            color: var(--text-primary-dark);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-light);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px; /* Added spacing */
+        }
+
+        button:hover {
+            background-color: #0d8a6e;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            min-height: 20px; /* Reserve space for message */
+            text-align: center;
+        }
+        #success-message { /* Added for success messages */
+            color: green;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            min-height: 20px;
+            text-align: center;
+        }
+
+
+        .theme-toggle-login {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--text-primary-light);
+            cursor: pointer;
+        }
+
+        body.dark-mode .theme-toggle-login {
+            color: var(--text-primary-dark);
+        }
+
+        .form-switch-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--link-light);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        body.dark-mode .form-switch-link {
+            color: var(--link-dark);
+        }
+
+        /* Hide forms initially */
+        #loginForm, #signupForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <i class="fas fa-moon theme-toggle-login" id="themeToggleLogin" title="Ganti Tema"></i>
+
+    <div class="login-container">
+        <h2 id="formTitle">Login ke HaoAI Chat</h2>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" name="loginUsername" required>
+            </div>
+            <div class="input-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+            </div>
+            <button type="submit" id="loginButton">Login</button>
+            <p id="loginErrorMessage" class="error-message"></p>
+            <p id="loginSuccessMessage" class="success-message"></p>
+            <a href="#" id="showSignupLink" class="form-switch-link">Belum punya akun? Daftar di sini.</a>
+        </form>
+
+        <form id="signupForm">
+            <div class="input-group">
+                <label for="signupUsername">Username:</label>
+                <input type="text" id="signupUsername" name="signupUsername" required>
+            </div>
+            <div class="input-group">
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" name="signupPassword" required>
+            </div>
+            <div class="input-group">
+                <label for="signupConfirmPassword">Konfirmasi Password:</label>
+                <input type="password" id="signupConfirmPassword" name="signupConfirmPassword" required>
+            </div>
+            <button type="submit" id="signupButton">Daftar</button>
+            <p id="signupErrorMessage" class="error-message"></p>
+            <p id="signupSuccessMessage" class="success-message"></p>
+            <a href="#" id="showLoginLink" class="form-switch-link">Sudah punya akun? Login di sini.</a>
+        </form>
+    </div>
+
+    <script>
+        // URL dasar untuk API backend Anda
+        // GANTI INI DENGAN URL BACKEND SERVER ANDA (misal: 'https://api.yourdomain.com')
+        const BASE_API_URL = 'http://localhost:3000'; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const formTitle = document.getElementById('formTitle');
+
+            const loginUsernameInput = document.getElementById('loginUsername');
+            const loginPasswordInput = document.getElementById('loginPassword');
+            const loginErrorMessage = document.getElementById('loginErrorMessage');
+            const loginSuccessMessage = document.getElementById('loginSuccessMessage');
+
+            const signupUsernameInput = document.getElementById('signupUsername');
+            const signupPasswordInput = document.getElementById('signupPassword');
+            const signupConfirmPasswordInput = document.getElementById('signupConfirmPassword');
+            const signupErrorMessage = document.getElementById('signupErrorMessage');
+            const signupSuccessMessage = document.getElementById('signupSuccessMessage');
+
+            const showSignupLink = document.getElementById('showSignupLink');
+            const showLoginLink = document.getElementById('showLoginLink');
+            const themeToggleLogin = document.getElementById('themeToggleLogin');
+            const appBody = document.body;
+
+            // --- Fungsi untuk mengelola tampilan form ---
+            function showLoginForm() {
+                formTitle.textContent = 'Login ke HaoAI Chat';
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                loginErrorMessage.textContent = '';
+                loginSuccessMessage.textContent = '';
+                signupErrorMessage.textContent = '';
+                signupSuccessMessage.textContent = '';
+                loginUsernameInput.value = '';
+                loginPasswordInput.value = '';
+                signupUsernameInput.value = '';
+                signupPasswordInput.value = '';
+                signupConfirmPasswordInput.value = '';
+            }
+
+            function showSignupForm() {
+                formTitle.textContent = 'Daftar Akun Baru';
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                loginErrorMessage.textContent = '';
+                loginSuccessMessage.textContent = '';
+                signupErrorMessage.textContent = '';
+                signupSuccessMessage.textContent = '';
+                loginUsernameInput.value = '';
+                loginPasswordInput.value = '';
+                signupUsernameInput.value = '';
+                signupPasswordInput.value = '';
+                signupConfirmPasswordInput.value = '';
+            }
+
+            // Tampilkan form login saat halaman dimuat
+            showLoginForm();
+
+            // --- Event Listeners untuk Beralih Form ---
+            showSignupLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSignupForm();
+            });
+
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showLoginForm();
+            });
+
+            // --- Fungsi Tema ---
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                appBody.classList.add('dark-mode');
+                themeToggleLogin.classList.remove('fa-moon');
+                themeToggleLogin.classList.add('fa-sun');
+            } else {
+                themeToggleLogin.classList.remove('fa-sun');
+                themeToggleLogin.classList.add('fa-moon');
+            }
+
+            themeToggleLogin.addEventListener('click', () => {
+                appBody.classList.toggle('dark-mode');
+                themeToggleLogin.classList.toggle('fa-sun', appBody.classList.contains('dark-mode'));
+                themeToggleLogin.classList.toggle('fa-moon', !appBody.classList.contains('dark-mode'));
+                localStorage.setItem('theme', appBody.classList.contains('dark-mode') ? 'dark' : 'light');
+            });
+
+            // --- Logika SIGN UP (Memanggil API Backend) ---
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                signupErrorMessage.textContent = '';
+                signupSuccessMessage.textContent = '';
+
+                const username = signupUsernameInput.value.trim();
+                const password = signupPasswordInput.value.trim();
+                const confirmPassword = signupConfirmPasswordInput.value.trim();
+
+                if (username.length < 3) {
+                    signupErrorMessage.textContent = 'Username minimal 3 karakter.';
+                    return;
+                }
+                if (password.length < 6) {
+                    signupErrorMessage.textContent = 'Password minimal 6 karakter.';
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    signupErrorMessage.textContent = 'Konfirmasi password tidak cocok.';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${BASE_API_URL}/api/signup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        signupSuccessMessage.textContent = data.message || 'Pendaftaran berhasil! Silakan login.';
+                        // Arahkan ke halaman login setelah pendaftaran berhasil
+                        setTimeout(() => {
+                            showLoginForm();
+                        }, 1500);
+                    } else {
+                        signupErrorMessage.textContent = data.message || 'Pendaftaran gagal. Username mungkin sudah terdaftar.';
+                    }
+                } catch (error) {
+                    console.error('Sign up error:', error);
+                    signupErrorMessage.textContent = 'Terjadi kesalahan saat pendaftaran. Pastikan backend berjalan.';
+                }
+            });
+
+            // --- Logika LOGIN (Memanggil API Backend) ---
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                loginErrorMessage.textContent = '';
+                loginSuccessMessage.textContent = '';
+
+                const username = loginUsernameInput.value.trim();
+                const password = loginPasswordInput.value.trim();
+
+                try {
+                    const response = await fetch(`${BASE_API_URL}/api/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Jika login berhasil, simpan token dan userId dari backend
+                        localStorage.setItem('authToken', data.token); // Token JWT
+                        localStorage.setItem('currentUser', data.userId); // ID pengguna dari database
+                        
+                        loginSuccessMessage.textContent = 'Login berhasil! Mengarahkan...';
+                        setTimeout(() => {
+                            window.location.href = 'index.html'; // Redirect to main chat page
+                        }, 500);
+                    } else {
+                        loginErrorMessage.textContent = data.message || 'Username atau password salah.';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    loginErrorMessage.textContent = 'Terjadi kesalahan saat mencoba login. Pastikan backend berjalan.';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
